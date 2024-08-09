@@ -11,8 +11,3 @@ alias la='ls -a'
 alias grep='grep -i'
 #清屏
 alias cls='clear'
-
-# 启用补全系统
-autoload -Uz compinit && compinit
-# 忽略补全时的大小写
-zstyle ':completion:*' matcher-list 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}'
