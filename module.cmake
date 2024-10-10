@@ -11,6 +11,9 @@ if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.13.0)#此模块要求CMake版本至�
           cmake_policy(SET CMP0122 NEW)
           if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.27)#
             cmake_policy(SET CMP0144 NEW)
+            if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.30)#
+              cmake_policy(SET CMP0167 NEW)
+            endif()
           endif()
         endif()
       endif()
@@ -158,13 +161,16 @@ if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.13.0)#此模块要求CMake版本至�
     #检测跨语言扩展支持
     include(CheckLanguage)
     
-    #SWIG环境初始化
-    if(DEFINED ENV{SWIG_EXECUTABLE})
-      set(SWIG_EXECUTABLE $ENV{SWIG_EXECUTABLE} CACHE FILEPATH "SWIG_EXECUTABLE" FORCE)
-    endif()
-    find_package(SWIG 4.0 QUIET COMPONENTS "python;java;csharp")
-    if(SWIG_FOUND)
-      include(UseSWIG)
+    #CSharp环境初始化
+    if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.8.2)
+      check_language("CSharp")
+      if(CMAKE_CSharp_COMPILER)
+        enable_language("CSharp")
+        include(CSharpUtilities)
+        
+        set(CMAKE_CSharp_FLAGS "/langversion:default /errorreport:prompt ${CMAKE_CSharp_FLAGS}")
+        #set(CMAKE_DOTNET_TARGET_FRAMEWORK_VERSION "" CACHE STRING "CMAKE_DOTNET_TARGET_FRAMEWORK_VERSION")
+      endif()
     endif()
     
     #Java环境初始化
@@ -176,21 +182,19 @@ if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.13.0)#此模块要求CMake版本至�
       include(FindJNI)
     endif()
     
-    #CSharp环境初始化
-    if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.8.2)
-      check_language("CSharp")
-      if(CMAKE_CSharp_COMPILER)
-        enable_language("CSharp")
-        include(CSharpUtilities)
-        
-        set(CMAKE_CSharp_FLAGS "/langversion:default /errorreport:prompt")
-        #set(CMAKE_DOTNET_TARGET_FRAMEWORK_VERSION "" CACHE STRING "CMAKE_DOTNET_TARGET_FRAMEWORK_VERSION")
-      endif()
+    #Python环境初始化
+    set(Python_USE_STATIC_LIBS "TRUE")
+    find_package(Python QUIET COMPONENTS "Interpreter;Development")
+    if(Python_FOUND)
     endif()
     
-    #Python环境初始化
-    find_package(Python QUIET COMPONENTS "Development")
-    if(Python_FOUND)
+    #SWIG环境初始化
+    if(DEFINED ENV{SWIG_EXECUTABLE})
+      set(SWIG_EXECUTABLE $ENV{SWIG_EXECUTABLE} CACHE FILEPATH "SWIG_EXECUTABLE" FORCE)
+    endif()
+    find_package(SWIG 4.0 QUIET COMPONENTS "python;java;csharp")
+    if(SWIG_FOUND)
+      include(UseSWIG)
     endif()
     
     #输出编译环境信息
@@ -381,20 +385,13 @@ endmacro()
 macro(configureCompanyLicense)
   set(LICENSE_MESSAGE)
   if(NOT DEFINED LICENSE_PRODUCT_ID)
-    if(DEFINED ENV{BUILD_XSIM_PRODUCT})#XSimStudio
-      if(CMAKE_SYSTEM_NAME MATCHES "Linux")
-        set(LICENSE_PRODUCT_ID "2003")
-      elseif(CMAKE_SYSTEM_NAME MATCHES "Windows")
-        set(LICENSE_PRODUCT_ID "2002")
-      endif()
-      list(APPEND LICENSE_MESSAGE "BUILD_XSIM_PRODUCT:LICENSE_PRODUCT_ID=${LICENSE_PRODUCT_ID}\t")
-    elseif(DEFINED ENV{BUILD_LINK_PRODUCT})#XSimLink
+    if(DEFINED ENV{BUILD_XXXX_PRODUCT})#XSimLink
       if(CMAKE_SYSTEM_NAME MATCHES "Linux")
         set(LICENSE_PRODUCT_ID "1001")
       elseif(CMAKE_SYSTEM_NAME MATCHES "Windows")
         set(LICENSE_PRODUCT_ID "1000")
       endif()
-      list(APPEND LICENSE_MESSAGE "BUILD_LINK_PRODUCT:LICENSE_PRODUCT_ID=${LICENSE_PRODUCT_ID}\t")
+      list(APPEND LICENSE_MESSAGE "BUILD_XXXX_PRODUCT:LICENSE_PRODUCT_ID=${LICENSE_PRODUCT_ID}\t")
     endif()
   else()
     list(APPEND LICENSE_MESSAGE "LICENSE_PRODUCT_ID=${LICENSE_PRODUCT_ID}\t")
@@ -481,7 +478,7 @@ macro(prepareForCXXTarget)
   #############################################################################################################################
   collectInformation()
   #############################################################################################################################
-  file(GLOB_RECURSE SOURCE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/*.c" "${CMAKE_CURRENT_SOURCE_DIR}/*.cxx")#归集源文件
+  file(GLOB_RECURSE SOURCE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/*.cc" "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/*.c" "${CMAKE_CURRENT_SOURCE_DIR}/*.cxx")#归集源文件
   file(GLOB_RECURSE HEADER_FILES "${CMAKE_CURRENT_SOURCE_DIR}/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp" "${CMAKE_CURRENT_SOURCE_DIR}/*.inc")#归集头文件
   file(GLOB_RECURSE FORM_FILES "${CMAKE_CURRENT_SOURCE_DIR}/*.ui")#归集界面文件
   file(GLOB_RECURSE RESOURCE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/*.rc" "${CMAKE_CURRENT_SOURCE_DIR}/*.qrc")#归集资源文件
@@ -559,33 +556,30 @@ endmacro()
 macro(prepareForSWIGTarget)
   collectInformation()
   #############################################################################################################################
-  file(GLOB_RECURSE SWIG_SOURCE_FILE_TEMPLATES "${CMAKE_CURRENT_SOURCE_DIR}/*.in")#归集SWIG接口定义模版文件
+  file(GLOB_RECURSE SWIG_SOURCE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/swig/${CURRENT_SOURCE_FOLDER}.i")#归集SWIG接口定义模版文件
+  file(GLOB_RECURSE CSHARP_SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/*.cs")#归集CSharp源文件
+  file(GLOB_RECURSE JAVA_SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/*.java")#归集Java源文件
+  file(GLOB_RECURSE PYTHON_SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/*.py")#归集Python源文件
   #############################################################################################################################
-  if(SWIG_SOURCE_FILE_TEMPLATES)
-    set(SWIG_SOURCE_FILES "")
-    foreach(SWIG_CURRENT_SOURCE_FILE_TEMPLATE ${SWIG_SOURCE_FILE_TEMPLATES})
-      get_filename_component(SWIG_CURRENT_SOURCE_FILE_NAME ${SWIG_CURRENT_SOURCE_FILE_TEMPLATE} NAME_WE)#
-      set(SWIG_CURRENT_SOURCE_FILE_PATH "${CMAKE_CURRENT_BINARY_DIR}/${SWIG_CURRENT_SOURCE_FILE_NAME}.i")
-      configure_file("${SWIG_CURRENT_SOURCE_FILE_TEMPLATE}" "${SWIG_CURRENT_SOURCE_FILE_PATH}")#将版本&版权等信息写入生成的二进制文件
-      
-      list(APPEND SWIG_SOURCE_FILES "${SWIG_CURRENT_SOURCE_FILE_PATH}")
-      
-      set_property(SOURCE ${SWIG_CURRENT_SOURCE_FILE_PATH} PROPERTY SWIG_MODULE_NAME "${SWIG_CURRENT_SOURCE_FILE_NAME}${SWIG_TARGET_MODULE_SUFFIX}")#指定模块名称
-    endforeach()
-    #配置SWIG生成选项
-    set_property(SOURCE ${SWIG_SOURCE_FILES} PROPERTY CPLUSPLUS ON)#指定按C++生成
-    if(SWIG_TARGET_PACKAGE)#设置包名(Java)
-      set_property(SOURCE ${SWIG_SOURCE_FILES} APPEND_STRING PROPERTY COMPILE_OPTIONS "-package;${SWIG_TARGET_PACKAGE}")
-      string(REPLACE "." "/" SWIG_TARGET_SOURCE_STRUCTURE ${SWIG_TARGET_PACKAGE})
-    elseif(SWIG_TARGET_NAMESPACE)#设置命名空间(CSharp)
-      set_property(SOURCE ${SWIG_SOURCE_FILES} APPEND_STRING PROPERTY COMPILE_OPTIONS -namespace ${SWIG_TARGET_NAMESPACE})
+  if(SWIG_SOURCE_FILES)
+    #指定模块名称
+    set(SWIG_MODULE_NAME "${CURRENT_SOURCE_FOLDER}${SWIG_TARGET_MODULE_SUFFIX}")
+    #set(SWIG_SOURCE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/swig/${CURRENT_SOURCE_FOLDER}.i")
+    #配置模块名称
+    set_property(SOURCE ${SWIG_SOURCE_FILES} PROPERTY SWIG_MODULE_NAME "${SWIG_MODULE_NAME}")
+    #指定按C++生成
+    set_property(SOURCE ${SWIG_SOURCE_FILES} PROPERTY CPLUSPLUS ON)
+    if(${SWIG_TARGET_MODULE_SUFFIX} MATCHES "4CSharp")
+      set_property(SOURCE ${SWIG_SOURCE_FILES} APPEND_STRING PROPERTY COMPILE_OPTIONS -namespace ${SWIG_MODULE_NAME})
+    elseif(${SWIG_TARGET_MODULE_SUFFIX} MATCHES "4Java")
+      set_property(SOURCE ${SWIG_SOURCE_FILES} APPEND_STRING PROPERTY COMPILE_OPTIONS "-package;${SWIG_MODULE_NAME}")
+      string(REPLACE "." "/" SWIG_TARGET_SOURCE_STRUCTURE ${SWIG_MODULE_NAME})
+    elseif(${SWIG_TARGET_MODULE_SUFFIX} MATCHES "4Python")
     endif()
     if(NOT SWIG_TARGET_SOURCE_OUTPUT_DIR)
       set(SWIG_TARGET_SOURCE_OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/source")
     endif()
-    if(SWIG_TARGET_SOURCE_OUTPUT_DIR)#目标语言代码生成位置
-      set_property(SOURCE ${SWIG_SOURCE_FILES} PROPERTY OUTPUT_DIR "${SWIG_TARGET_SOURCE_OUTPUT_DIR}")
-    endif()
+    set_property(SOURCE ${SWIG_SOURCE_FILES} PROPERTY OUTPUT_DIR "${SWIG_TARGET_SOURCE_OUTPUT_DIR}")
     set_property(SOURCE ${SWIG_SOURCE_FILES} PROPERTY OUTFILE_DIR "${CMAKE_CURRENT_BINARY_DIR}/generated_source")#本地接口实现文件生成位置
   endif()
   #############################################################################################################################
@@ -806,25 +800,6 @@ macro(generatePluginLibrary)
   endif()
 endmacro()
 
-#指定生成Java
-macro(generateJavaPackage)
-  if(Java_FOUND)
-    prepareForJavaTarget()#文件归集
-    if(JAVA_SOURCE_FILES)
-      if(EXISTS "${PROJECT_SOURCE_DIR}/Manifest.txt.in")
-        set(CURRENT_TARGET_MANIFEST_TXT "${CMAKE_CURRENT_BINARY_DIR}/Manifest.txt")
-        configure_file("${PROJECT_SOURCE_DIR}/Manifest.txt.in" "${CURRENT_TARGET_MANIFEST_TXT}")
-      endif()
-      add_jar(${CURRENT_TARGET} SOURCES "${JAVA_SOURCE_FILES}" INCLUDE_JARS "${CURRENT_JAVA_INCLUDE_PATHS}" ENTRY_POINT "${CURRENT_JAVA_ENTRY_POINT}" MANIFEST "${CURRENT_TARGET_MANIFEST_TXT}")#生成Jar包
-      configureAsJavaTarget()#配置目标项目
-    else()
-      message(WARNING "JAVA_SOURCE_FILES(*.java) not found")
-    endif()
-  else()
-    message(FATAL_ERROR "Module[\"Java\"] not found")
-  endif()
-endmacro()
-
 #指定生成CSharp可执行程序
 macro(generateCSharpProgram)
   if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.8.2)
@@ -863,6 +838,25 @@ macro(generateCSharpLibrary)
   endif()
 endmacro()
 
+#指定生成Java
+macro(generateJavaPackage)
+  if(Java_FOUND)
+    prepareForJavaTarget()#文件归集
+    if(JAVA_SOURCE_FILES)
+      if(EXISTS "${PROJECT_SOURCE_DIR}/Manifest.txt.in")
+        set(CURRENT_TARGET_MANIFEST_TXT "${CMAKE_CURRENT_BINARY_DIR}/Manifest.txt")
+        configure_file("${PROJECT_SOURCE_DIR}/Manifest.txt.in" "${CURRENT_TARGET_MANIFEST_TXT}")
+      endif()
+      add_jar(${CURRENT_TARGET} SOURCES "${JAVA_SOURCE_FILES}" INCLUDE_JARS "${CURRENT_JAVA_INCLUDE_PATHS}" ENTRY_POINT "${CURRENT_JAVA_ENTRY_POINT}" MANIFEST "${CURRENT_TARGET_MANIFEST_TXT}")#生成Jar包
+      configureAsJavaTarget()#配置目标项目
+    else()
+      message(WARNING "JAVA_SOURCE_FILES(*.java) not found")
+    endif()
+  else()
+    message(FATAL_ERROR "Module[\"Java\"] not found")
+  endif()
+endmacro()
+
 #指定生成Python可执行程序
 macro(generatePythonProgram)
   prepareForPythonTarget()#文件归集
@@ -886,13 +880,15 @@ macro(generateSWIGLibraryForCSharp)
     prepareForSWIGTarget()
     if(SWIG_SOURCE_FILES)
       swig_add_library(${CURRENT_TARGET} TYPE "MODULE" LANGUAGE "csharp" SOURCES "${SWIG_SOURCE_FILES}")
+      configureAsSWIGTarget()
       add_custom_command(TARGET "${CURRENT_TARGET}"
           POST_BUILD
           DEPENDS "${CURRENT_TARGET}"
-          COMMAND "${CMAKE_CSharp_COMPILER}" -target:library -out:${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${SWIG_TARGET_NAME}${CMAKE_SHARED_MODULE_SUFFIX} -recurse:"${SWIG_TARGET_SOURCE_OUTPUT_DIR}/*.cs"
-          COMMENT "Generated ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${SWIG_TARGET_NAME}${CMAKE_SHARED_MODULE_SUFFIX}"
+          COMMAND "${CMAKE_CSharp_COMPILER}" -target:library -out:${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${SWIG_MODULE_NAME}${CMAKE_SHARED_MODULE_SUFFIX} -recurse:"${SWIG_TARGET_SOURCE_OUTPUT_DIR}/*.cs" "${CSHARP_SOURCE_FILES}"
+          COMMENT "Generated ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${SWIG_MODULE_NAME}${CMAKE_SHARED_MODULE_SUFFIX}"
+          #删除生成的C/C++文件
+          COMMAND "${CMAKE_COMMAND}" -E rm -rf "${CMAKE_CURRENT_BINARY_DIR}/generated_source"
       )
-      configureAsSWIGTarget()
     else()
       message(WARNING "SWIG_SOURCE_FILES(*.i) not found")
     endif()
@@ -907,22 +903,24 @@ macro(generateSWIGLibraryForJava)
       prepareForSWIGTarget()
       if(SWIG_SOURCE_FILES)
         swig_add_library(${CURRENT_TARGET} TYPE "MODULE" LANGUAGE "java" SOURCES "${SWIG_SOURCE_FILES}")
+        configureAsSWIGTarget()
         add_custom_command(TARGET "${CURRENT_TARGET}"
             POST_BUILD
             DEPENDS "${CURRENT_TARGET}"
             #
             COMMAND "${CMAKE_COMMAND}" -E make_directory "${CMAKE_CURRENT_BINARY_DIR}/java"
             #编译java
-            COMMAND "${Java_JAVAC_EXECUTABLE}" ${CMAKE_JAVA_COMPILE_FLAGS} -d "${CMAKE_CURRENT_BINARY_DIR}/java" -sourcepath "${SWIG_TARGET_SOURCE_OUTPUT_DIR}" "${SWIG_TARGET_SOURCE_OUTPUT_DIR}/*.java"
+            COMMAND "${Java_JAVAC_EXECUTABLE}" ${CMAKE_JAVA_COMPILE_FLAGS} -d "${CMAKE_CURRENT_BINARY_DIR}/java" -sourcepath "${SWIG_TARGET_SOURCE_OUTPUT_DIR}" "${SWIG_TARGET_SOURCE_OUTPUT_DIR}/*.java" ${JAVA_SOURCE_FILES}
             #生成jar包
-            COMMAND "${Java_JAR_EXECUTABLE}" cf "${CMAKE_JAVA_TARGET_OUTPUT_DIR}/${SWIG_TARGET_NAME}.jar" -C "${CMAKE_CURRENT_BINARY_DIR}/java" ${SWIG_TARGET_SOURCE_STRUCTURE}
-            COMMENT "Generated ${CMAKE_JAVA_TARGET_OUTPUT_DIR}/${SWIG_TARGET_NAME}.jar"
+            COMMAND "${Java_JAR_EXECUTABLE}" cf "${CMAKE_JAVA_TARGET_OUTPUT_DIR}/${SWIG_MODULE_NAME}.jar" -C "${CMAKE_CURRENT_BINARY_DIR}/java" ${SWIG_TARGET_SOURCE_STRUCTURE}
+            COMMENT "Generated ${CMAKE_JAVA_TARGET_OUTPUT_DIR}/${SWIG_MODULE_NAME}.jar"
             #删除Java编译生成的中间文件
             COMMAND "${CMAKE_COMMAND}" -E rm -rf "${CMAKE_CURRENT_BINARY_DIR}/java"
             #删除生成的java源码,防止无关代码残留,若需要查看包装代码请注释此行
             COMMAND "${CMAKE_COMMAND}" -E rm -rf "${CMAKE_CURRENT_BINARY_DIR}/source"
+            #删除生成的C/C++文件
+            COMMAND "${CMAKE_COMMAND}" -E rm -rf "${CMAKE_CURRENT_BINARY_DIR}/generated_source"
         )
-        configureAsSWIGTarget()
       else()
         message(WARNING "SWIG_SOURCE_FILES(*.i) not found")
       endif()
@@ -940,6 +938,12 @@ macro(generateSWIGLibraryForPython)
     if(SWIG_SOURCE_FILES)
       swig_add_library(${CURRENT_TARGET} TYPE "MODULE" LANGUAGE "python" SOURCES "${SWIG_SOURCE_FILES}")
       configureAsSWIGTarget()
+      add_custom_command(TARGET "${CURRENT_TARGET}"
+          POST_BUILD
+          DEPENDS "${CURRENT_TARGET}"
+          #删除生成的C/C++文件
+          COMMAND "${CMAKE_COMMAND}" -E rm -rf "${CMAKE_CURRENT_BINARY_DIR}/generated_source"
+      )
     else()
       message(WARNING "SWIG_SOURCE_FILES(*.i) not found")
     endif()
