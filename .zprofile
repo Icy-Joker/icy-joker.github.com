@@ -1,6 +1,6 @@
 export http_proxy=http://127.0.0.1:1087;
 export https_proxy=http://127.0.0.1:1087;
-export all_proxy=socks5://127.0.0.1:1086;
+#export all_proxy=socks5://127.0.0.1:1086;
 
 export BREW_HOME=/opt/homebrew
 export ThirdParty=$BREW_HOME/opt
