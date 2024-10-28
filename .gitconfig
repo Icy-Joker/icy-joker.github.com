@@ -1,8 +1,9 @@
 [user]
-	name = Icy-Joker
-	email = 790238255@qq.com
+  name = Icy-Joker
+  email = 790238255@qq.com
 [core]
-	autoctrlf = true
+  autoctrlf = true
+  safectrlf = true
 [http]
   proxy = http://127.0.0.1:1087
 [https]
