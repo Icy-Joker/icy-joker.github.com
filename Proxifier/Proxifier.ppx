@@ -6,7 +6,7 @@
             <ViaProxy enabled="false">
                 <TryLocalDnsFirst enabled="false"/>
             </ViaProxy>
-            <ExclusionList ExcludeSimpleHostnames="true" ExcludeLocalhost="true" ExcludeSelfHostname="true" ExcludeLocalDomain="true">localhost;%SimpleHostnames%;%ComputerName%;*.local;</ExclusionList>
+            <ExclusionList ExcludeSimpleHostnames="true" ExcludeLocalhost="true" ExcludeSelfHostname="true" ExcludeLocalDomain="true"> localhost; %SimpleHostnames%; %ComputerName%; *.local; </ExclusionList>
         </Resolve>
         <Encryption mode="basic"/>
         <HttpProxiesSupport enabled="true"/>
@@ -27,22 +27,20 @@
     <RuleList>
         <Rule enabled="true">
             <Name>Localhost</Name>
-            <Targets>localhost; 127.0.0.1; ::1; %ComputerName%</Targets>
+            <Targets> localhost; 127.0.0.1; ::1; %ComputerName%; </Targets>
             <Action type="Direct"/>
         </Rule>
         <Rule enabled="true">
             <Name>CLion</Name>
             <Applications>CLion</Applications>
-            <Targets>www.jetbrains.com;www.jetbrains.com.cn;accounts.jetbrains.com;accounts.jetbrains.com.cn;
-            </Targets>
+            <Targets> www.jetbrains.com; www.jetbrains.com.cn; accounts.jetbrains.com; accounts.jetbrains.com.cn; </Targets>
             <Ports>443</Ports>
             <Action type="Block"/>
         </Rule>
         <Rule enabled="true">
             <Name>CLion</Name>
             <Applications>CLion</Applications>
-            <Targets>plugins.jetbrains.com;resources.jetbrains.com;cloudconfig.jetbrains.com;downloads.marketplace.jetbrains.com;marketplace.jetbrains.com.cn;d3kdv2x2np28ys.cloudfront.net;dnvxbljc5wkxf.cloudfront.cn;
-            </Targets>
+            <Targets> plugins.jetbrains.com; resources.jetbrains.com; cloudconfig.jetbrains.com; downloads.marketplace.jetbrains.com; marketplace.jetbrains.com.cn; d3kdv2x2np28ys.cloudfront.net; dnvxbljc5wkxf.cloudfront.cn; </Targets>
             <Action type="Direct"/>
         </Rule>
         <Rule enabled="false">
