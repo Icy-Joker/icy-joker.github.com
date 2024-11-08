@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ProxifierProfile version="101" platform="MacOSX" product_id="2" product_minver="200">
+    <Options>
+        <Resolve>
+            <AutoModeDetection enabled="true"/>
+            <ViaProxy enabled="false">
+                <TryLocalDnsFirst enabled="false"/>
+            </ViaProxy>
+            <ExclusionList ExcludeSimpleHostnames="true" ExcludeLocalhost="true" ExcludeSelfHostname="true" ExcludeLocalDomain="true">localhost;%SimpleHostnames%;%ComputerName%;*.local;
+</ExclusionList>
+        </Resolve>
+        <Encryption mode="basic"/>
+        <HttpProxiesSupport enabled="true"/>
+        <HandleDirectConnections enabled="true"/>
+        <ConnectionLoopDetection enabled="true"/>
+        <ProcessServices enabled="true"/>
+        <ProcessOtherUsers enabled="true"/>
+        <BlockUDP443 enabled="false"/>
+    </Options>
+    <ProxyList>
+        <Proxy id="100" type="HTTPS">
+            <Address>127.0.0.1</Address>
+            <Port>1087</Port>
+            <Options>0</Options>
+        </Proxy>
+    </ProxyList>
+    <ChainList/>
+    <RuleList>
+        <Rule enabled="true">
+            <Name>Localhost</Name>
+            <Targets>localhost; 127.0.0.1; ::1; %ComputerName%</Targets>
+            <Action type="Direct"/>
+        </Rule>
+        <Rule enabled="true">
+            <Name>CLion</Name>
+            <Applications>CLion</Applications>
+            <Targets>www.jetbrains.com;
+www.jetbrains.com.cn;
+accounts.jetbrains.com;
+accounts.jetbrains.com.cn;</Targets>
+            <Ports>443</Ports>
+            <Action type="Block"/>
+        </Rule>
+        <Rule enabled="true">
+            <Name>CLion</Name>
+            <Applications>CLion</Applications>
+            <Targets>plugins.jetbrains.com;
+resources.jetbrains.com;
+cloudconfig.jetbrains.com;
+downloads.marketplace.jetbrains.com;
+marketplace.jetbrains.com.cn;
+d3kdv2x2np28ys.cloudfront.net;
+dnvxbljc5wkxf.cloudfront.cn;</Targets>
+            <Action type="Direct"/>
+        </Rule>
+        <Rule enabled="false">
+            <Name>CLion</Name>
+            <Applications>CLion</Applications>
+            <Action type="Proxy">100</Action>
+        </Rule>
+        <Rule enabled="true">
+            <Name>ChatGPT</Name>
+            <Applications>ChatGPT</Applications>
+            <Action type="Proxy">100</Action>
+        </Rule>
+        <Rule enabled="true">
+            <Name>Default</Name>
+            <Action type="Direct"/>
+        </Rule>
+    </RuleList>
+</ProxifierProfile>
