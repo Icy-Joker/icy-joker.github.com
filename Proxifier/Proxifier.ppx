@@ -6,7 +6,6 @@
             <ViaProxy enabled="false">
                 <TryLocalDnsFirst enabled="false"/>
             </ViaProxy>
-            <ExclusionList ExcludeSimpleHostnames="true" ExcludeLocalhost="true" ExcludeSelfHostname="true" ExcludeLocalDomain="true"> localhost; %SimpleHostnames%; %ComputerName%; *.local; </ExclusionList>
         </Resolve>
         <Encryption mode="basic"/>
         <HttpProxiesSupport enabled="true"/>
@@ -42,11 +41,6 @@
             <Applications>CLion</Applications>
             <Targets> plugins.jetbrains.com; resources.jetbrains.com; cloudconfig.jetbrains.com; downloads.marketplace.jetbrains.com; marketplace.jetbrains.com.cn; d3kdv2x2np28ys.cloudfront.net; dnvxbljc5wkxf.cloudfront.cn; </Targets>
             <Action type="Direct"/>
-        </Rule>
-        <Rule enabled="false">
-            <Name>CLion</Name>
-            <Applications>CLion</Applications>
-            <Action type="Proxy">100</Action>
         </Rule>
         <Rule enabled="true">
             <Name>ChatGPT</Name>
