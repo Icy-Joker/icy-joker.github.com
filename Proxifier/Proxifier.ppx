@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <ProxifierProfile version="101" platform="MacOSX" product_id="2" product_minver="200">
     <Options>
+        <Resolve>
+            <AutoModeDetection enabled="true"/>
+            <ViaProxy enabled="false">
+                <TryLocalDnsFirst enabled="false"/>
+            </ViaProxy>
+            <ExclusionList ExcludeSimpleHostnames="false" ExcludeLocalhost="false" ExcludeSelfHostname="false" ExcludeLocalDomain="false"></ExclusionList>
+        </Resolve>
         <Encryption mode="basic"/>
-        <HttpProxiesSupport enabled="true"/>
-        <HandleDirectConnections enabled="true"/>
+        <HttpProxiesSupport enabled="false"/>
+        <HandleDirectConnections enabled="false"/>
         <ConnectionLoopDetection enabled="true"/>
         <ProcessServices enabled="true"/>
         <ProcessOtherUsers enabled="true"/>
