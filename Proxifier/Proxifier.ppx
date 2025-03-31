@@ -32,20 +32,20 @@
         </Rule>
         <Rule enabled="true">
             <Name>CLion</Name>
-            <Applications>CLion</Applications>
+            <Applications> CLion; clion64.exe; </Applications>
             <Targets> www.jetbrains.com; www.jetbrains.com.cn; accounts.jetbrains.com; accounts.jetbrains.com.cn; </Targets>
             <Ports>443</Ports>
             <Action type="Block"/>
         </Rule>
         <Rule enabled="true">
             <Name>CLion</Name>
-            <Applications>CLion</Applications>
+            <Applications> CLion; clion64.exe; </Applications>
             <Targets> plugins.jetbrains.com; resources.jetbrains.com; cloudconfig.jetbrains.com; downloads.marketplace.jetbrains.com; marketplace.jetbrains.com.cn; d3kdv2x2np28ys.cloudfront.net; dnvxbljc5wkxf.cloudfront.cn; </Targets>
             <Action type="Direct"/>
         </Rule>
         <Rule enabled="true">
             <Name>ChatGPT</Name>
-            <Applications>ChatGPT</Applications>
+            <Applications> ChatGPT; </Applications>
             <Action type="Proxy">100</Action>
         </Rule>
         <Rule enabled="true">
