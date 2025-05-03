@@ -30,17 +30,22 @@
             <Targets> localhost; 127.0.0.1; ::1; %ComputerName%; </Targets>
             <Action type="Direct"/>
         </Rule>
+        <Rule enabled="false">
+            <Name>CLion</Name>
+            <Applications> CLion; clion64.exe; </Applications>
+            <Action type="Block"/>
+        </Rule>
         <Rule enabled="true">
             <Name>CLion</Name>
             <Applications> CLion; clion64.exe; </Applications>
-            <Targets> www.jetbrains.com; www.jetbrains.com.cn; accounts.jetbrains.com; accounts.jetbrains.com.cn; </Targets>
+            <Targets>www.jetbrains.com;www.jetbrains.com.cn;accounts.jetbrains.com;accounts.jetbrains.com.cn;www-weighted.jetbrains.com;jrebel.npegeek.com;oauth.account.jetbrains.com;entry.prod-eu.w3jbcom.aws.intellij.net;</Targets>
             <Ports>443</Ports>
             <Action type="Block"/>
         </Rule>
         <Rule enabled="true">
             <Name>CLion</Name>
             <Applications> CLion; clion64.exe; </Applications>
-            <Targets> plugins.jetbrains.com; resources.jetbrains.com; cloudconfig.jetbrains.com; downloads.marketplace.jetbrains.com; marketplace.jetbrains.com.cn; d3kdv2x2np28ys.cloudfront.net; dnvxbljc5wkxf.cloudfront.cn; </Targets>
+            <Targets> plugins.jetbrains.com;resources.jetbrains.com;cloudconfig.jetbrains.com;downloads.marketplace.jetbrains.com;marketplace.jetbrains.com.cn;d3kdv2x2np28ys.cloudfront.net;dnvxbljc5wkxf.cloudfront.cn;</Targets>
             <Action type="Direct"/>
         </Rule>
         <Rule enabled="true">
