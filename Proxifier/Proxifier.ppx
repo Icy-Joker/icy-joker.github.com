@@ -45,7 +45,7 @@
         <Rule enabled="true">
             <Name>CLion</Name>
             <Applications> CLion; clion64.exe; </Applications>
-            <Targets> plugins.jetbrains.com;resources.jetbrains.com;cloudconfig.jetbrains.com;downloads.marketplace.jetbrains.com;marketplace.jetbrains.com.cn;d3kdv2x2np28ys.cloudfront.net;dnvxbljc5wkxf.cloudfront.cn;</Targets>
+            <Targets>plugins.jetbrains.com;resources.jetbrains.com;cloudconfig.jetbrains.com;downloads.marketplace.jetbrains.com;marketplace.jetbrains.com.cn;d3kdv2x2np28ys.cloudfront.net;dnvxbljc5wkxf.cloudfront.cn;</Targets>
             <Action type="Direct"/>
         </Rule>
         <Rule enabled="true">
