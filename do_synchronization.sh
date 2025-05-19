@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-file_names="$HOME/.bashrc;$HOME/.bash_profile;$HOME/.gitconfig;$HOME/.inputrc;$HOME/.vimrc;$HOME/.zprofile;$HOME/.zshenv;$HOME/.zshrc"
+file_names="$HOME/.bashrc;$HOME/.bash_profile;$HOME/.gitconfig;$HOME/.inputrc;$HOME/.vimrc;$HOME/.zprofile;$HOME/.zshenv;$HOME/.zshrc;$HOME/.wgetrc;$HOME/.curlrc"
 # 设置 IFS 为分号
 IFS=';'
 # 逐个输出字符串中分号隔开的部分
