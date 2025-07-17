@@ -56,6 +56,7 @@ set viminfo='20,\"50
 set history=50
 
 set number                   " 在每一行最前面显示行号
+set relativenumber           " 在每一行最前面显示相对行号
 set ruler                    " 在编辑过程中，在右下角显示光标位置的状态行
 set cursorline               " 突出显示当前行
 set showmatch                " 高亮显示对应的括号

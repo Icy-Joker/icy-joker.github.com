@@ -13,4 +13,3 @@ then
   export FPATH=$BREW_HOME/share/zsh/site-functions:$FPATH
 fi
 #
-export DYLD_LIBRARY_PATH=/opt/osgearth/lib:$DYLD_LIRARY_PATH
