@@ -1,6 +1,12 @@
 set completion-ignore-case on
 set show-all-if-ambiguous on
 
+# 增量历史搜索
+# 上箭头搜索历史中以当前输入开头的命令
+"\e[A": history-search-backward
+# 下箭头搜索历史中以当前输入开头的命令
+"\e[B": history-search-forward
+
 set meta-flag on
 set input-meta on
 set output-meta on

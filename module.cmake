@@ -25,22 +25,22 @@ if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.13.0)#此模块要求CMake版本至�
       endif()
     endif()
   endif()
-  
+
   if(${CMAKE_CURRENT_SOURCE_DIR} STREQUAL ${CMAKE_SOURCE_DIR})#编译环境与目标配置初始化
     set(CMAKE_WARN_VS10 OFF CACHE BOOL "CMAKE_WARN_VS10")#忽略将不支持VS2010的警告
-    
+
     set(CMAKE_C_STANDARD "11")#设置语言标准要求"C11"
     set(CMAKE_CXX_STANDARD "11")#设置语言标准要求"C++11"
-    
+
     set(CMAKE_C_STANDARD_REQUIRED "ON")#设置语言标准要求必须满足
     set(CMAKE_CXX_STANDARD_REQUIRED "ON")#设置语言标准要求必须满足
-    
+
     set(CMAKE_C_EXTENSIONS "ON") # 编译器扩展
     set(CMAKE_CXX_EXTENSIONS "ON") # 编译器扩展
-    
+
     set(CMAKE_POSITION_INDEPENDENT_CODE "ON")#生成位置无关代码
     set(CMAKE_ENABLE_EXPORTS "TRUE")
-    
+
     #设置编译配置(VS支持多配置)
     if(NOT CMAKE_CONFIGURATION_TYPES)
       if(NOT CMAKE_BUILD_TYPE)
@@ -48,14 +48,14 @@ if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.13.0)#此模块要求CMake版本至�
       endif()
       set(CMAKE_CONFIGURATION_TYPES "${CMAKE_BUILD_TYPE}" CACHE INTERNAL "CMAKE_CONFIGURATION_TYPES" FORCE)
     endif()
-    
+
     if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")#MSVC编译器
       #设置编译选项
       #${CMAKE_CXX_FLAGS_INIT}=/DWIN32 /D_WINDOWS /W3 /GR /EHsc
       #${CMAKE_CXX_FLAGS_DEBUG_INIT}=/MDd /Zi /Ob0 /Od /RTC1
       #${CMAKE_CXX_FLAGS_RELEASE_INIT}=/MD /O2 /Ob2 /DNDEBUG
       #${CMAKE_CXX_FLAGS_RELWITHDEBINFO_INIT}=/MD /Zi /O2 /Ob1 /DNDEBUG
-      
+
       #将源字符集和执行字符集设置为UTF-8
       add_compile_options(/utf-8)
       #多处理器编译
@@ -68,7 +68,7 @@ if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.13.0)#此模块要求CMake版本至�
       add_compile_options(/wd4099)#忽略警告[C4099: 正在链接对象,如同没有调试信息一样]               #开启调试的情况下,没有找到链接库的PDB文件
       #将特定警告视为错误
       add_compile_options(/we4715)#警告视为错误[C4715: 不是所有的控件路径都返回值]                  #有时错误分支返回在优化开启的情况下会出现未知情况
-      
+
       #确定C/C++运行时库版本
       if(NOT DEFINED MSVC_TOOLSET_VERSION)
         if(MSVC_VERSION LESS 1400)
@@ -98,14 +98,14 @@ if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.13.0)#此模块要求CMake版本至�
         #set(MSVC_TOOLSET_VERSION "140" CACHE STRING "MSVC_TOOLSET_VERSION")
       endif()
       set(CRT_VERSION_NAME "vc${MSVC_TOOLSET_VERSION}" CACHE STRING "CRT_VERSION_NAME")
-      
+
       #确定处理器架构
       if(CMAKE_CL_64)
         set(PLATFORM "x64" CACHE STRING "PLATFORM")
       else()
         set(PLATFORM "x32" CACHE STRING "PLATFORM")
       endif()
-      
+
       #库文件调试后缀
       set(CMAKE_DEBUG_POSTFIX "_d" CACHE STRING "CMAKE_DEBUG_POSTFIX" FORCE)
       #库文件编译信息
@@ -118,7 +118,7 @@ if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.13.0)#此模块要求CMake版本至�
       #配置运行时库加载路径
       set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
       #set(CMAKE_INSTALL_RPATH_USE_LINK_PATH FALSE)
-      #set(CMAKE_SKIP_BUILD_RPATH TRUE)
+      set(CMAKE_SKIP_BUILD_RPATH TRUE)
       #set(CMAKE_SKIP_INSTALL_RPATH TRUE)
       #
       if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
@@ -127,14 +127,14 @@ if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.13.0)#此模块要求CMake版本至�
         else()
           set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -rdynamic -static-libgcc -static-libstdc++")
         endif()
-        
+
         list(APPEND CMAKE_INSTALL_RPATH "$ORIGIN;")
       elseif(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
         list(APPEND CMAKE_INSTALL_RPATH "@executable_path;@loader_path;")
       endif()
       list(APPEND CMAKE_INSTALL_RPATH ".;../bin;../lib/${CRT_VERSION_NAME}_${PLATFORM};../lib;../thirdparty/bin;")
     endif()
-    
+
     #可执行程序输出目录
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/$<CONFIG>" CACHE PATH "CMAKE_RUNTIME_OUTPUT_DIRECTORY" FORCE)
     #动态库输出目录
@@ -145,19 +145,19 @@ if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.13.0)#此模块要求CMake版本至�
     set(CMAKE_PDB_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/pdb/$<CONFIG>" CACHE PATH "CMAKE_PDB_OUTPUT_DIRECTORY" FORCE)
     #Java
     set(CMAKE_JAVA_TARGET_OUTPUT_DIR "${CMAKE_BINARY_DIR}/bin" CACHE PATH "CMAKE_JAVA_TARGET_OUTPUT_DIR" FORCE)
-    
+
     #允许使用自定义目录
     set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-    
+
     #设置CMake预定义文件夹名称
     set(PREDEFINED_TARGETS_FOLDER "_CMakePredefinedTargets")
     set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER ${PREDEFINED_TARGETS_FOLDER})
-    
+
     #
     if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.9)
       set_property(GLOBAL PROPERTY AUTOGEN_SOURCE_GROUP "Moc Files")#
     endif()
-    
+
     #若未设置安装目录,则自定义安装路径
     if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
       #获取工程根目录
@@ -169,23 +169,23 @@ if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.13.0)#此模块要求CMake版本至�
       endif()
       set(CMAKE_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX_DEFAULT} CACHE INTERNAL "CMAKE_INSTALL_PREFIX" FORCE)
     endif()
-    
+
     #检测跨语言扩展支持
     include(CheckLanguage)
-    
+
     #CSharp环境初始化
     if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.8.2)
       check_language("CSharp")
       if(CMAKE_CSharp_COMPILER)
         enable_language("CSharp")
         include(CSharpUtilities)
-        
+
         list(APPEND CMAKE_CSharp_FLAGS " /langversion:default /errorreport:prompt ")
         #set(CMAKE_CSharp_FLAGS "${CMAKE_CSharp_FLAGS}")
         #set(CMAKE_DOTNET_TARGET_FRAMEWORK_VERSION "" CACHE STRING "CMAKE_DOTNET_TARGET_FRAMEWORK_VERSION")
       endif()
     endif()
-    
+
     #Java环境初始化
     find_package(Java QUIET COMPONENTS "Development")
     if(Java_FOUND)
@@ -194,12 +194,12 @@ if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.13.0)#此模块要求CMake版本至�
         enable_language("Java")
         include(UseJava)
         include(FindJNI)
-        
+
         #Java编译指定为utf8编码,防止源码文件编码格式不符导致编译报错
         list(APPEND CMAKE_JAVA_COMPILE_FLAGS "-encoding" "utf8")
       endif()
     endif()
-    
+
     #Python环境初始化
     set(Python_USE_STATIC_LIBS "TRUE")
     find_package(Python QUIET COMPONENTS "Development;Interpreter")
@@ -212,12 +212,12 @@ if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.13.0)#此模块要求CMake版本至�
         set(CMAKE_SHARED_MODULE_SUFFIX_PYTHON ".so")
       endif()
     endif()
-    
+
     #gRPC环境初始化
     find_package(gRPC QUIET)
     #Protobuf环境初始化
     find_package(Protobuf QUIET)
-    
+
     #SWIG环境初始化
     if(DEFINED ENV{SWIG_EXECUTABLE})
       set(SWIG_EXECUTABLE $ENV{SWIG_EXECUTABLE} CACHE FILEPATH "SWIG_EXECUTABLE" FORCE)
@@ -226,7 +226,7 @@ if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.13.0)#此模块要求CMake版本至�
     if(SWIG_FOUND)
       include(UseSWIG)
     endif()
-    
+
     #输出编译环境信息
     message("")
     message("************************************************************************************************************************")
@@ -286,14 +286,14 @@ macro(configureBoostModules)
       set(Boost_USE_STATIC_LIBS "ON")
       set(Boost_USE_MULTITHREADED "ON")
       #预查找Boost库,确定Boost版本
-      find_package(Boost COMPONENTS ${BOOST_MODULE_LIST} QUIET)
+      find_package(Boost OPTIONAL_COMPONENTS ${BOOST_MODULE_LIST} QUIET)
       if(Boost_FOUND)
         set(BOOST_MODULE_PREFIX "Boost::")
         foreach(CURRENT_MODULE_NAME ${BOOST_MODULE_LIST})
           if(TARGET "${BOOST_MODULE_PREFIX}${CURRENT_MODULE_NAME}")
             target_link_libraries(${CURRENT_TARGET} PRIVATE "${BOOST_MODULE_PREFIX}${CURRENT_MODULE_NAME}")#导入Boost公共库/模块依赖
           else()
-            message(FATAL_ERROR "BoostModule[${CURRENT_MODULE_NAME}] not found")
+            message(WARNING "BoostModule[${CURRENT_MODULE_NAME}] not found")
           endif()
         endforeach()
         target_link_libraries(${CURRENT_TARGET} PRIVATE "Boost::diagnostic_definitions;Boost::disable_autolinking;")#
@@ -379,9 +379,9 @@ macro(configureThirdPartyList)
         find_package(${CURRENT_LIBRARY_NAME} QUIET)
         if(${CURRENT_LIBRARY_NAME}_FOUND)
           if(EXISTS "${${CURRENT_LIBRARY_NAME}_INCLUDE_DIRS}")
-            #target_include_directories(${CURRENT_TARGET} PRIVATE "${${CURRENT_LIBRARY_NAME}_INCLUDE_DIRS}")
+            target_include_directories(${CURRENT_TARGET} PRIVATE "${${CURRENT_LIBRARY_NAME}_INCLUDE_DIRS}")
           elseif(EXISTS "${${CURRENT_LIBRARY_NAME}_INCLUDE_DIR}")
-            #target_include_directories(${CURRENT_TARGET} PRIVATE "${${CURRENT_LIBRARY_NAME}_INCLUDE_DIR}")
+            target_include_directories(${CURRENT_TARGET} PRIVATE "${${CURRENT_LIBRARY_NAME}_INCLUDE_DIR}")
           endif()
           if(DEFINED ${CURRENT_LIBRARY_NAME}_LIBRARIES AND NOT "${${CURRENT_LIBRARY_NAME}_LIBRARIES}" STREQUAL "")
             #target_Link_libraries(${CURRENT_TARGET} PRIVATE "${${CURRENT_LIBRARY_NAME}_LIBRARIES}")
@@ -499,7 +499,7 @@ endmacro()
 #导入
 macro(addUIGroup)
   addBasicGroup()
-  
+
   #importTarget("")#
 endmacro()
 
@@ -638,7 +638,7 @@ macro(configureTargetForInstall)
   #############################################################################################################################
   if(NOT ${CURRENT_TARGET_TYPE} STREQUAL "UTILITY")#静态库
     if(${CURRENT_TARGET_TYPE} STREQUAL "STATIC_LIBRARY")#静态库
-      if(${CMAKE_CURRENT_SOURCE_DIR} MATCHES "${PROJECT_SOURCE_DIR}/Libraries")
+      if(${CMAKE_CURRENT_SOURCE_DIR} MATCHES "${PROJECT_SOURCE_DIR}/00_Libraries")
         if(NOT ${PUBLIC_HEADER_DIR} STREQUAL "${PARENT_DIRECTORY}")
           install(DIRECTORY "${PUBLIC_HEADER_DIR}/${CURRENT_SOURCE_FOLDER}" DESTINATION "include" OPTIONAL)
           install(TARGETS ${CURRENT_TARGET} ARCHIVE DESTINATION "lib/${CRT_VERSION_NAME}_${PLATFORM}/static")#静态库安装目录
@@ -646,20 +646,20 @@ macro(configureTargetForInstall)
       endif()
     else()
       if(${CURRENT_TARGET_TYPE} STREQUAL "MODULE_LIBRARY")#插件库
-        if(${CMAKE_CURRENT_SOURCE_DIR} MATCHES "${PROJECT_SOURCE_DIR}/Plugins")
-          string(REGEX REPLACE "${PROJECT_SOURCE_DIR}/Plugins" "plugins" PLUGIN_INSTALL_PATH ${PARENT_DIRECTORY})
+        if(${CMAKE_CURRENT_SOURCE_DIR} MATCHES "${PROJECT_SOURCE_DIR}/02_Plugins")
+          string(REGEX REPLACE "${PROJECT_SOURCE_DIR}/02_Plugins" "plugins" PLUGIN_INSTALL_PATH ${PARENT_DIRECTORY})
           install(TARGETS ${CURRENT_TARGET} RUNTIME DESTINATION "${PLUGIN_INSTALL_PATH}" LIBRARY DESTINATION "${PLUGIN_INSTALL_PATH}")#插件库安装目录
         endif()
       else()
         if(${CURRENT_TARGET_TYPE} STREQUAL "EXECUTABLE")#可执行程序
           set_property(TARGET ${CURRENT_TARGET} PROPERTY DEBUG_POSTFIX "d")#设置可执行程序(调试版本)后缀
-          if(${CMAKE_CURRENT_SOURCE_DIR} MATCHES "${PROJECT_SOURCE_DIR}/Applications")
+          if(${CMAKE_CURRENT_SOURCE_DIR} MATCHES "${PROJECT_SOURCE_DIR}/03_Applications")
             install(TARGETS ${CURRENT_TARGET} RUNTIME DESTINATION "bin")#可执行程序安装目录
-          elseif(${CMAKE_CURRENT_SOURCE_DIR} MATCHES "${PROJECT_SOURCE_DIR}/Tools")
+          elseif(${CMAKE_CURRENT_SOURCE_DIR} MATCHES "${PROJECT_SOURCE_DIR}/04_Tools")
             install(TARGETS ${CURRENT_TARGET} RUNTIME DESTINATION "tools")#可执行程序(工具)安装目录
           endif()
         elseif(${CURRENT_TARGET_TYPE} STREQUAL "SHARED_LIBRARY")#动态库
-          if(${CMAKE_CURRENT_SOURCE_DIR} MATCHES "${PROJECT_SOURCE_DIR}/Libraries")
+          if(${CMAKE_CURRENT_SOURCE_DIR} MATCHES "${PROJECT_SOURCE_DIR}/00_Libraries")
             if(NOT ${PUBLIC_HEADER_DIR} STREQUAL "${PARENT_DIRECTORY}")#二次开发库(公开)
               install(DIRECTORY "${PUBLIC_HEADER_DIR}/${CURRENT_SOURCE_FOLDER}" DESTINATION "include" OPTIONAL)
             endif()
@@ -759,7 +759,7 @@ macro(configureAsProtobufTarget)
         #IMPORT_DIRS "proto"
         #GENERATE_EXTENSIONS ".pb.h;.pb.cc"
     )
-    
+
     target_include_directories("${CURRENT_TARGET}" PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>")
     target_include_directories("${CURRENT_TARGET}" PRIVATE "${Protobuf_INCLUDE_DIRS}")
     target_link_libraries("${CURRENT_TARGET}" PRIVATE "${Protobuf_LIBRARIES}")
@@ -775,7 +775,7 @@ macro(configureAsProtobufTarget)
             #IMPORT_DIRS "proto"
             GENERATE_EXTENSIONS ".grpc.pb.h;.grpc.pb.cc"
         )
-        
+
         target_link_libraries("${CURRENT_TARGET}" PRIVATE "gRPC::grpc++")
       else()
         message(WARNING "CURRENT CMAKE_VERSION: (${CMAKE_VERSION}) VERSION_REQUIRED: (3.21.0) OR HIGHER FOR GRPC PROJECT")

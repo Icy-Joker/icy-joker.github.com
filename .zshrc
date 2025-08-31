@@ -16,3 +16,12 @@ alias cls='clear'
 autoload -Uz compinit && compinit
 # 忽略补全时的大小写
 zstyle ':completion:*' matcher-list 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}'
+
+autoload -U up-line-or-beginning-search
+autoload -U down-line-or-beginning-search
+
+zle -N up-line-or-beginning-search
+zle -N down-line-or-beginning-search
+
+bindkey '^[[A' up-line-or-beginning-search   # Up
+bindkey '^[[B' down-line-or-beginning-search # Down
