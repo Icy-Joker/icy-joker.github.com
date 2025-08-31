@@ -11,7 +11,7 @@
       "name": "RelWithDebInfo",
       "description": "Build for RelWithDebInfo configuration",
       "environment": {
-        "SecondParty": "/Users/icy-joker/WorkSpace/CustomSDK",
+        "SecondParty": "/Users/icy-joker/WorkSpace/Personal/CustomSDK",
         "ThirdParty": "/opt/homebrew/opt",
         "BOOST_DIR": "/opt/homebrew/opt/boost",
         "QT_DIR": "/opt/homebrew/opt/qt"
@@ -22,7 +22,7 @@
       "name": "Debug",
       "description": "Build for Debug configuration",
       "environment": {
-        "SecondParty": "/Users/icy-joker/WorkSpace/CustomSDK",
+        "SecondParty": "/Users/icy-joker/WorkSpace/Personal/CustomSDK",
         "ThirdParty": "/opt/homebrew/opt",
         "BOOST_DIR": "/opt/homebrew/opt/boost",
         "QT_DIR": "/opt/homebrew/opt/qt"
@@ -33,11 +33,37 @@
       "name": "Release",
       "description": "Build for Release configuration",
       "environment": {
-        "SecondParty": "/Users/icy-joker/WorkSpace/CustomSDK",
+        "SecondParty": "/Users/icy-joker/WorkSpace/Personal/CustomSDK",
         "ThirdParty": "/opt/homebrew/opt",
         "BOOST_DIR": "/opt/homebrew/opt/boost",
         "QT_DIR": "/opt/homebrew/opt/qt"
       }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "RelWithDebInfo",
+      "configurePreset": "RelWithDebInfo",
+      "jobs": 12,
+      "targets": [
+        "all"
+      ]
+    },
+    {
+      "name": "Debug",
+      "configurePreset": "Debug",
+      "jobs": 12,
+      "targets": [
+        "all"
+      ]
+    },
+    {
+      "name": "Release",
+      "configurePreset": "Release",
+      "jobs": 12,
+      "targets": [
+        "all"
+      ]
     }
   ]
 }
